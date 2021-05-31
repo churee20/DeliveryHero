@@ -1,0 +1,10 @@
+mall\PolicyHandler.class
+mall\ProductRepository.class
+mall\ProductController.class
+mall\Product.class
+mall\ProductApplication.class
+mall\StockModified.class
+mall\AbstractEvent.class
+mall\AbstractEvent$1.class
+mall\ProductRegistered.class
+mall\config\kafka\KafkaProcessor.class
