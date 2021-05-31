@@ -204,22 +204,65 @@ public interface DeliveryRepository extends PagingAndSortingRepository<Delivery,
 
 }
 ```
-- 적용 후 REST API 의 테스트 ( TBD )
+- 적용 후 REST API 의 테스트
 ```
-# 주문 처리
-http POST http://localhost:8082/orders customerId=100 productId=100
-http POST http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders customerId=100 productId=100
+# 상품 등록
+http POST localhost:8084/products productId=1 name=“CUP” stock=99 ( OK )
+http POST localhost:8084/products productId=2 name=“CAR” stock=99 ( OK )
+http POST localhost:8084/products productId=3 name=“TV” stock=5 ( OK )
 
-# 배달 완료 처리
-http PATCH http://localhost:8084/deliveries/1 status=Completed
-http PATCH http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/deliveries/1 status=Completed
+# 주문 처리
+http POST localhost:8081/orders productId=1 qty=10
+http POST http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders productId=1 qty=10
 
 # 주문 상태 확인
-http GET http://localhost:8082/orders/1
+http GET localhost:8081/orders/1
 http GET http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders/1
+
+HTTP/1.1 200
+Content-Type: application/hal+json;charset=UTF-8
+Date: Mon, 31 May 2021 05:48:02 GMT
+Transfer-Encoding: chunked
+
+{
+    "_links": {
+        "order": {
+            "href": "http://localhost:8081/orders/1"
+        },
+        "self": {
+            "href": "http://localhost:8081/orders/1"
+        }
+    },
+    "productId": "1",
+    "qty": 10,
+    "status": "DeliveryStarted"
+}
+
+# Customer Center 주문 상태 확인
+D:\kafka\bin\windows>http get http://localhost:8083/mypages/1
+HTTP/1.1 200
+Content-Type: application/hal+json;charset=UTF-8
+Date: Mon, 31 May 2021 05:52:10 GMT
+Transfer-Encoding: chunked
+
+{
+    "_links": {
+        "mypage": {
+            "href": "http://localhost:8083/mypages/1"
+        },
+        "self": {
+            "href": "http://localhost:8083/mypages/1"
+        }
+    },
+    "deliveryId": 1,
+    "orderId": 1,
+    "productId": "1",
+    "qty": 10,
+    "status": "DeliveryStarted"
+}
 ```
 
-## 동기식 호출 과 Fallback 처리 ( 완료 )
+## 동기식 호출 과 Fallback 처리
 
 분석단계에서의 조건 중 하나로 1)주문(order)->상품(product) 간의 호출, 2) 주문(Order) -> 배송(Delivery)은 동기식 일관성을 유지하는 트랜잭션으로 처리
 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
@@ -279,13 +322,12 @@ public interface ProductService {
 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 상품 서비스가 장애가 나면 주문도 못받는다는 것을 확인
 
-
 ```
 # 상품 (product) 서비스를 잠시 내려놓음 (ctrl+c, replicas 0 으로 설정)
 
 #주문처리 
 http POST http://localhost:8081/orders proudctId=1 qty=2   #Fail
-http POST http://localhost:8081/orders proudctId=2 qty=5   #Fail
+http POST http://localhost:8081/orders proudctId=1 qty=5   #Fail
 
 #상품 서비스 재기동
 cd product
@@ -378,7 +420,7 @@ cd delivery
 mvn spring-boot:run
 
 #주문상태 확인
-http GET localhost:8082/orders/1     # 주문 상태 DeliveryStarted로 변경 확인
+http GET localhost:8081/orders/1     # 주문 상태 DeliveryStarted로 변경 확인
 ```
 
 
