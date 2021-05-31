@@ -121,7 +121,7 @@
     - 서브 도메인과 바운디드 컨텍스트의 분리:  각 팀의 KPI 별로 아래와 같이 관심 구현 스토리를 나눠가짐
 
 
-# 구현: ( 완료 )
+# 구현:
 
 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 마이크로 서비스들을 스프링부트로 구현하였다. 
 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 8084 이다)
@@ -141,7 +141,7 @@ mvn spring-boot:run
 
 ```
 
-## DDD 의 적용 ( 완료 )
+## DDD 의 적용
 
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다.
 ```
@@ -207,9 +207,9 @@ public interface DeliveryRepository extends PagingAndSortingRepository<Delivery,
 - 적용 후 REST API 의 테스트
 ```
 # 상품 등록
-http POST localhost:8084/products productId=1 name=“CUP” stock=99 ( OK )
-http POST localhost:8084/products productId=2 name=“CAR” stock=99 ( OK )
-http POST localhost:8084/products productId=3 name=“TV” stock=5 ( OK )
+http POST localhost:8084/products productId=1 name=“Bread” stock=99 ( OK )
+http POST localhost:8084/products productId=2 name=“Udon” stock=99 ( OK )
+http POST localhost:8084/products productId=3 name=“Spagetti” stock=5 ( OK )
 
 # 주문 처리
 http POST localhost:8081/orders productId=1 qty=10
@@ -340,7 +340,7 @@ http POST http://localhost:8081/orders proudctId=2 qty=5   #Success
 
 
 
-## 비동기식 호출 publish-subscribe ( 완료 )
+## 비동기식 호출 publish-subscribe
 
 주문이 완료된 후, 배송 시스템에게 이를 알려주는 행위는 동기식이 아닌 비동기식으로 처리한다.
 - 이를 위하여 주문이 접수된 후에 곧바로 주문 접수 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
