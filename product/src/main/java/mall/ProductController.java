@@ -17,9 +17,7 @@ import java.util.Optional;
             method = RequestMethod.GET,
             produces = "application/json;charset=UTF-8")
     public boolean checkAndModifyStock(@RequestParam("productId") Long productId, 
-                                        @RequestParam("qty")  int qty) 
-
-            System.out.println("##### /products/checkAndModifyStock  called #####");                                        
+                                        @RequestParam("qty")  int qty)                        
 
             throws Exception {
 
