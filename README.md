@@ -258,7 +258,7 @@ Transfer-Encoding: chunked
     "orderId": 1,
     "productId": "1",
     "qty": 10,
-    "status": "DeliveryStarted"
+    "status": "Ordered"
 }
 ```
 
