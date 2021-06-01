@@ -495,11 +495,11 @@ http GET localhost:8081/orders/1     # 주문 상태 DeliveryStarted로 변경 �
 ```
 
 
-# 운영 ( TBD )
+# 운영
 
 ## CI/CD 설정
-SirenOrder의 ECR 구성은 아래와 같다.
-![image](https://user-images.githubusercontent.com/20352446/118971683-ad6b4780-b9aa-11eb-893a-1cd05a95ea11.png)
+DeliveryHero ECR 구성은 아래와 같다.
+![image](https://user-images.githubusercontent.com/74900977/120283970-b9ce9900-c2f6-11eb-986c-2aa9eb33c157.png)
 
 사용한 CI/CD 도구는 AWS CodeBuild
 ![image](https://user-images.githubusercontent.com/20352446/118972243-4d28d580-b9ab-11eb-83aa-5cd39d06a784.png)
