@@ -11,8 +11,8 @@ public class Order {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     private String productId;
-    private Integer qty;
-    private String status;
+    private Integer qty;        
+    private String status = "Ordered";
 
     @PrePersist
     public void onPrePersist(){
