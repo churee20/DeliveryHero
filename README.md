@@ -211,12 +211,83 @@ http POST localhost:8084/products productId=1 name=“Bread” stock=99 ( OK )
 http POST localhost:8084/products productId=2 name=“Udon” stock=99 ( OK )
 http POST localhost:8084/products productId=3 name=“Spagetti” stock=5 ( OK )
 
+# 상품 등록 상태 확인
+http GET localhost:8084/products ( OK )
+
+HTTP/1.1 200
+Content-Type: application/hal+json;charset=UTF-8
+Date: Tue, 01 Jun 2021 05:33:41 GMT
+Transfer-Encoding: chunked
+{
+    "_embedded": {
+        "products": [
+            {
+                "_links": {
+                    "product": {
+                        "href": "http://localhost:8084/products/1"
+                    },
+                    "self": {
+                        "href": "http://localhost:8084/products/1"
+                    }
+                },
+                "name": "“Bread”",
+                "productId": 1,
+                "stock": 99
+            },
+            {
+                "_links": {
+                    "product": {
+                        "href": "http://localhost:8084/products/2"
+                    },
+                    "self": {
+                        "href": "http://localhost:8084/products/2"
+                    }
+                },
+                "name": "“Udon”",
+                "productId": 2,
+                "stock": 99
+            },
+            {
+                "_links": {
+                    "product": {
+                        "href": "http://localhost:8084/products/3"
+                    },
+                    "self": {
+                        "href": "http://localhost:8084/products/3"
+                    }
+                },
+                "name": "“Spagetti”",
+                "productId": 3,
+                "stock": 5
+            }
+        ]
+    },
+    "_links": {
+        "profile": {
+            "href": "http://localhost:8084/profile/products"
+        },
+        "search": {
+            "href": "http://localhost:8084/products/search"
+        },
+        "self": {
+            "href": "http://localhost:8084/products{?page,size,sort}",
+            "templated": true
+        }
+    },
+    "page": {
+        "number": 0,
+        "size": 20,
+        "totalElements": 3,
+        "totalPages": 1
+    }
+}
+
 # 주문 처리
-http POST localhost:8081/orders productId=1 qty=10
+http POST localhost:8081/orders productId=1 qty=10 ( OK )
 http POST http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders productId=1 qty=10
 
 # 주문 상태 확인
-http GET localhost:8081/orders/1
+http GET localhost:8081/orders/1 ( OK )
 http GET http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders/1
 
 HTTP/1.1 200
@@ -239,7 +310,7 @@ Transfer-Encoding: chunked
 }
 
 # Customer Center 주문 상태 확인
-D:\kafka\bin\windows>http get http://localhost:8083/mypages/1
+D:\kafka\bin\windows>http get http://localhost:8083/mypages/1 ( OK )
 HTTP/1.1 200
 Content-Type: application/hal+json;charset=UTF-8
 Date: Mon, 31 May 2021 05:52:10 GMT
@@ -258,7 +329,7 @@ Transfer-Encoding: chunked
     "orderId": 1,
     "productId": "1",
     "qty": 10,
-    "status": "Ordered"
+    "status": "DeliveryStarted"
 }
 ```
 
