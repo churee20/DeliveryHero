@@ -121,7 +121,7 @@
     - 서브 도메인과 바운디드 컨텍스트의 분리:  각 팀의 KPI 별로 아래와 같이 관심 구현 스토리를 나눠가짐
 
 
-# 구현: ( 완료 )
+# 구현:
 
 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 마이크로 서비스들을 스프링부트로 구현하였다. 
 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 8084 이다)
@@ -141,7 +141,7 @@ mvn spring-boot:run
 
 ```
 
-## DDD 의 적용 ( 완료 )
+## DDD 의 적용
 
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다.
 ```
@@ -204,22 +204,136 @@ public interface DeliveryRepository extends PagingAndSortingRepository<Delivery,
 
 }
 ```
-- 적용 후 REST API 의 테스트 ( TBD )
+- 적용 후 REST API 의 테스트
 ```
-# 주문 처리
-http POST http://localhost:8082/orders customerId=100 productId=100
-http POST http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders customerId=100 productId=100
+# 상품 등록
+http POST localhost:8084/products productId=1 name=“Bread” stock=99 ( OK )
+http POST localhost:8084/products productId=2 name=“Udon” stock=99 ( OK )
+http POST localhost:8084/products productId=3 name=“Spagetti” stock=5 ( OK )
 
-# 배달 완료 처리
-http PATCH http://localhost:8084/deliveries/1 status=Completed
-http PATCH http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/deliveries/1 status=Completed
+# 상품 등록 상태 확인
+http GET localhost:8084/products ( OK )
+
+HTTP/1.1 200
+Content-Type: application/hal+json;charset=UTF-8
+Date: Tue, 01 Jun 2021 05:33:41 GMT
+Transfer-Encoding: chunked
+{
+    "_embedded": {
+        "products": [
+            {
+                "_links": {
+                    "product": {
+                        "href": "http://localhost:8084/products/1"
+                    },
+                    "self": {
+                        "href": "http://localhost:8084/products/1"
+                    }
+                },
+                "name": "“Bread”",
+                "productId": 1,
+                "stock": 99
+            },
+            {
+                "_links": {
+                    "product": {
+                        "href": "http://localhost:8084/products/2"
+                    },
+                    "self": {
+                        "href": "http://localhost:8084/products/2"
+                    }
+                },
+                "name": "“Udon”",
+                "productId": 2,
+                "stock": 99
+            },
+            {
+                "_links": {
+                    "product": {
+                        "href": "http://localhost:8084/products/3"
+                    },
+                    "self": {
+                        "href": "http://localhost:8084/products/3"
+                    }
+                },
+                "name": "“Spagetti”",
+                "productId": 3,
+                "stock": 5
+            }
+        ]
+    },
+    "_links": {
+        "profile": {
+            "href": "http://localhost:8084/profile/products"
+        },
+        "search": {
+            "href": "http://localhost:8084/products/search"
+        },
+        "self": {
+            "href": "http://localhost:8084/products{?page,size,sort}",
+            "templated": true
+        }
+    },
+    "page": {
+        "number": 0,
+        "size": 20,
+        "totalElements": 3,
+        "totalPages": 1
+    }
+}
+
+# 주문 처리
+http POST localhost:8081/orders productId=1 qty=10 ( OK )
+http POST http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders productId=1 qty=10
 
 # 주문 상태 확인
-http GET http://localhost:8082/orders/1
+http GET localhost:8081/orders/1 ( OK )
 http GET http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders/1
+
+HTTP/1.1 200
+Content-Type: application/hal+json;charset=UTF-8
+Date: Mon, 31 May 2021 05:48:02 GMT
+Transfer-Encoding: chunked
+
+{
+    "_links": {
+        "order": {
+            "href": "http://localhost:8081/orders/1"
+        },
+        "self": {
+            "href": "http://localhost:8081/orders/1"
+        }
+    },
+    "productId": "1",
+    "qty": 10,
+    "status": "DeliveryStarted"
+}
+
+# Customer Center 주문 상태 확인
+D:\kafka\bin\windows>http get http://localhost:8083/mypages/1 ( OK )
+HTTP/1.1 200
+Content-Type: application/hal+json;charset=UTF-8
+Date: Mon, 31 May 2021 05:52:10 GMT
+Transfer-Encoding: chunked
+
+{
+    "_links": {
+        "mypage": {
+            "href": "http://localhost:8083/mypages/1"
+        },
+        "self": {
+            "href": "http://localhost:8083/mypages/1"
+        }
+    },
+    "deliveryId": 1,
+    "orderId": 1,
+    "productId": "1",
+    "qty": 10,
+    "status": "DeliveryStarted"
+}
 ```
 
-## 동기식 호출 과 Fallback 처리 ( 완료 )
+## 동기식 호출 과 Fallback 처리
 
 분석단계에서의 조건 중 하나로 1)주문(order)->상품(product) 간의 호출, 2) 주문(Order) -> 배송(Delivery)은 동기식 일관성을 유지하는 트랜잭션으로 처리
 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
@@ -279,13 +393,12 @@ public interface ProductService {
 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 상품 서비스가 장애가 나면 주문도 못받는다는 것을 확인
 
-
 ```
 # 상품 (product) 서비스를 잠시 내려놓음 (ctrl+c, replicas 0 으로 설정)
 
 #주문처리 
 http POST http://localhost:8081/orders proudctId=1 qty=2   #Fail
-http POST http://localhost:8081/orders proudctId=2 qty=5   #Fail
+http POST http://localhost:8081/orders proudctId=1 qty=5   #Fail
 
 #상품 서비스 재기동
 cd product
@@ -298,7 +411,7 @@ http POST http://localhost:8081/orders proudctId=2 qty=5   #Success
 
 
 
-## 비동기식 호출 publish-subscribe ( 완료 )
+## 비동기식 호출 publish-subscribe
 
 주문이 완료된 후, 배송 시스템에게 이를 알려주는 행위는 동기식이 아닌 비동기식으로 처리한다.
 - 이를 위하여 주문이 접수된 후에 곧바로 주문 접수 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
@@ -378,7 +491,7 @@ cd delivery
 mvn spring-boot:run
 
 #주문상태 확인
-http GET localhost:8082/orders/1     # 주문 상태 DeliveryStarted로 변경 확인
+http GET localhost:8081/orders/1     # 주문 상태 DeliveryStarted로 변경 확인
 ```
 
 
