@@ -33,7 +33,8 @@ public class Order {
             BeanUtils.copyProperties(this, ordered);
             ordered.publishAfterCommit();
         } else
-            throw new Exception("Out of Stock Exception Raised.");
+        System.out.println("########### Out of Stock !! #######");
+            //throw new Exception("Out of Stock Exception Raised.");
     }
 
     @PostUpdate
