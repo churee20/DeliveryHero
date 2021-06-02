@@ -514,7 +514,7 @@ AWS EKS를 활용했으며, 추가한 namespace는 deliveryhero 와 kafka로 아
 
 ###EKS Deployment
 
-namespace: coffee
+namespace: deliveryorder
 ![image](https://user-images.githubusercontent.com/20352446/118971846-d986c880-b9aa-11eb-8872-5baf9083d99a.png)
 
 namespace: kafka
@@ -553,22 +553,23 @@ hystrix:
       execution.isolation.thread.timeoutInMilliseconds: 610
 
 ```
-- 상품(product) 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게
+- 주문(order) 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게
 ```
         @RequestMapping(value = "/products/checkProductStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
         public Integer checkProductStatus(@RequestParam("productId") Long productId) throws Exception {
                 
                 //FIXME 생략
                 
-                //임의의 부하를 위한 강제 설정
-                try {
+                  @PrePersist
+                  public void onPrePersist(){
+        
+                    //임의의 부하를 위한 강제 설정  
+                    try {
                         Thread.currentThread().sleep((long) (400 + Math.random() * 220));
-                } catch (InterruptedException e) {
-                        e.printStackTrace();
-                }
-
-                return price;
-        }
+                        } catch (InterruptedException e) {
+                                e.printStackTrace();
+                    }
+    
 ```
 
 * 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인:
@@ -576,7 +577,7 @@ hystrix:
 - 60초 동안 실시
 
 ```
-siege -c100 -t60S -r10 --content-type "application/json" 'http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders POST {"customerId":2, "productId":3}'
+siege -c100 -t60S -r10 --content-type "application/json" 'http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders GET {"productId":1}'
 
 HTTP/1.1 201     6.51 secs:     239 bytes ==> POST http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders
 HTTP/1.1 201     0.73 secs:     239 bytes ==> POST http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders
@@ -622,29 +623,29 @@ Shortest transaction:	        0.01
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: product
-  namespace: coffee
+  name: order
+  namespace: deliveryorder
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: product
+    name: order
   minReplicas: 1
   maxReplicas: 5
   targetCPUUtilizationPercentage: 5
 
-➜  ~ kubectl get hpa -n coffee
+➜  ~ kubectl get hpa -n deliveryorder
 NAME      REFERENCE            TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
 order     Deployment/order     30%/5%          1         5         5          17h
 product   Deployment/product   31%/10%         1         5         5          132m
 ```
 - 부하를 2분간 유지한다.
 ```
-➜  ~ siege -c30 -t60S -r10 --content-type "application/json" 'http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders POST {"customerId":2, "productId":1}'
+➜  ~ siege -c30 -t60S -r10 --content-type "application/json" 'http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders GET {"productId":1}'
 ```
 - 오토스케일이 어떻게 되고 있는지 확인한다.
 ```
-➜  ~ kubectl get deploy -n coffee
+➜  ~ kubectl get deploy -n deliveryorder
 NAME       READY   UP-TO-DATE   AVAILABLE   AGE
 customer   1/1     1            1           8h
 delivery   1/1     1            1           8h
@@ -655,7 +656,7 @@ report     1/1     1            1           4h51m
 ```
 - 어느정도 시간이 흐르면 스케일 아웃이 동작하는 것을 확인
 ```
-➜  ~ kubectl get deploy -n coffee
+➜  ~ kubectl get deploy -n deliveryorder
 NAME              READY   UP-TO-DATE   AVAILABLE   AGE
 customer          1/1     1            1           23h
 delivery          1/1     1            1           23h
@@ -685,9 +686,9 @@ Shortest transaction:	        0.02
 ##ConfigMap 설정
 특정값을 k8s 설정으로 올리고 서비스를 기동 후, kafka 정상 접근 여부 확인한다.
 
-    ➜  ~ kubectl describe cm report-config -n coffee
-    Name:         report-config
-    Namespace:    coffee
+    ➜  ~ kubectl describe cm customercenter-config -n deliveryorder
+    Name:         customercenter-config
+    Namespace:    deliveryorder
     Labels:       <none>
     Annotations:  <none>
     
@@ -727,9 +728,9 @@ EKS 설치된 kafka에 정상 접근된 것을 확인할 수 있다. (해당 con
 ## Zero-downtime deploy
 k8s의 무중단 서비스 배포 기능을 점검한다.
 
-    ➜  ~ kubectl describe deploy order -n coffee
+    ➜  ~ kubectl describe deploy order -n deliveryorder
     Name:                   order
-    Namespace:              coffee
+    Namespace:              deliveryorder
     CreationTimestamp:      Thu, 20 May 2021 12:59:14 +0900
     Labels:                 app=order
     Annotations:            deployment.kubernetes.io/revision: 8
@@ -754,7 +755,7 @@ k8s의 무중단 서비스 배포 기능을 점검한다.
 
     ➜  ~ kubectl rollout status deploy/order -n coffee
 
-    ➜  ~ kubectl get po -n coffee
+    ➜  ~ kubectl get po -n deliveryorder
     NAME                        READY   STATUS    RESTARTS   AGE
     customer-785f544f95-mh456   1/1     Running   0          5h40m
     delivery-557f4d7f49-z47bx   1/1     Running   0          5h40m
@@ -767,7 +768,7 @@ k8s의 무중단 서비스 배포 기능을 점검한다.
     product-7f67966577-n7kqk    1/1     Running   0          5h40m
     report-5c6fd7b477-w9htj     1/1     Running   0          4h27m
     
-    ➜  ~ kubectl get deploy -n coffee
+    ➜  ~ kubectl get deploy -n deliveryorder
     NAME       READY   UP-TO-DATE   AVAILABLE   AGE
     customer   1/1     1            1           8h
     delivery   1/1     1            1           8h
@@ -776,7 +777,7 @@ k8s의 무중단 서비스 배포 기능을 점검한다.
     product    1/1     1            1           8h
     report     1/1     1            1           4h28m
     
-    ➜  ~ kubectl get po -n coffee
+    ➜  ~ kubectl get po -n deliveryorder
     NAME                        READY   STATUS    RESTARTS   AGE
     customer-785f544f95-mh456   1/1     Running   0          5h41m
     delivery-557f4d7f49-z47bx   1/1     Running   0          5h41m
@@ -791,7 +792,7 @@ k8s의 무중단 서비스 배포 기능을 점검한다.
     product-7f67966577-n7kqk    1/1     Running   0          5h41m
     report-5c6fd7b477-w9htj     1/1     Running   0          4h28m
     
-    ➜  ~ kubectl get po -n coffee
+    ➜  ~ kubectl get po -n deliveryorder
     NAME                        READY   STATUS    RESTARTS   AGE
     customer-785f544f95-mh456   1/1     Running   0          5h42m
     delivery-557f4d7f49-z47bx   1/1     Running   0          5h42m
