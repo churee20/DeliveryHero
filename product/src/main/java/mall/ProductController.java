@@ -33,11 +33,12 @@ import java.util.Optional;
                     productRepository.save(product);
                     
             System.out.println("##### Order Accepted #####");
+            return status;
 
             }
 
             System.out.println("##### Order Denyed #####");
-            
+
             return status;
     }   
 
