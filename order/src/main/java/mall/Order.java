@@ -1,4 +1,4 @@
-package mall;
+package deliveryorder;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
@@ -25,7 +25,7 @@ public class Order {
     
     @PostPersist
     public void onPostPersist() throws Exception {
-        boolean rslt = OrderApplication.applicationContext.getBean(mall.external.ProductService.class)
+        boolean rslt = OrderApplication.applicationContext.getBean(deliveryorder.external.ProductService.class)
         .checkAndModifyStock(this.getProductId(), this.getQty());
 
         if (rslt) {
@@ -50,12 +50,12 @@ public class Order {
         //Following code causes dependency to external APIs
         // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
 
-        mall.external.Cancellation cancellation = new mall.external.Cancellation();
+        deliveryorder.external.Cancellation cancellation = new deliveryorder.external.Cancellation();
         // mappings goes here
         cancellation.setOrderId(this.getId());
         cancellation.setStatus("Delivery Cancelled");
 
-        OrderApplication.applicationContext.getBean(mall.external.CancellationService.class)
+        OrderApplication.applicationContext.getBean(deliveryorder.external.CancellationService.class)
             .registerCancelledOrder(cancellation);
     }
 

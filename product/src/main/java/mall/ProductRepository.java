@@ -1,4 +1,4 @@
-package mall;
+package deliveryorder;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package mall;
+package deliveryorder;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;

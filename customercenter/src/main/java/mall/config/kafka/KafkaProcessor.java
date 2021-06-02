@@ -1,4 +1,4 @@
-package mall.config.kafka;
+package deliveryorder.config.kafka;
 
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.Output;

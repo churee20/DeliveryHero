@@ -1,4 +1,4 @@
-package mall;
+package deliveryorder;
 
 public class OrderCancelled extends AbstractEvent {
 

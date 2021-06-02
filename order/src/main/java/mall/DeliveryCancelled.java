@@ -1,5 +1,5 @@
 
-package mall;
+package deliveryorder;
 
 public class DeliveryCancelled extends AbstractEvent {
 

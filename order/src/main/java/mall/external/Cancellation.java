@@ -1,4 +1,4 @@
-package mall.external;
+package deliveryorder.external;
 
 public class Cancellation {
 

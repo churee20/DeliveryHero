@@ -1,9 +1,7 @@
-package mall;
+package deliveryorder;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
-import java.util.List;
-import java.util.Date;
 
 @Entity
 @Table(name="Cancellation_table")
@@ -20,8 +18,6 @@ public class Cancellation {
         DeliveryCancelled deliveryCancelled = new DeliveryCancelled();
         BeanUtils.copyProperties(this, deliveryCancelled);
         deliveryCancelled.publishAfterCommit();
-
-
     }
 
 

@@ -25,10 +25,10 @@ spring:
       bindings:
         event-in:
           group: customercenter
-          destination: mall
+          destination: deliveryorder
           contentType: application/json
         event-out:
-          destination: mall
+          destination: deliveryorder
           contentType: application/json
 
 logging:
@@ -57,8 +57,8 @@ spring:
       bindings:
         event-in:
           group: customercenter
-          destination: mall
+          destination: deliveryorder
           contentType: application/json
         event-out:
-          destination: mall
+          destination: deliveryorder
           contentType: application/json

@@ -145,7 +145,7 @@ mvn spring-boot:run
 
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다.
 ```
-package mall;
+package deliveryorder;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
@@ -196,7 +196,7 @@ public class Delivery {
 ```
 - Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (RDB or NoSQL) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
 ```
-package mall;
+package deliveryorder;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -342,7 +342,7 @@ Transfer-Encoding: chunked
 
 
 ```
-package mall.external;
+package deliveryorder.external;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -417,7 +417,7 @@ http POST http://localhost:8081/orders proudctId=2 qty=5   #Success
 - 이를 위하여 주문이 접수된 후에 곧바로 주문 접수 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
  
 ```
-package mall;
+package deliveryorder;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
@@ -430,7 +430,7 @@ public class Order {
  ...
      @PostPersist
     public void onPostPersist() throws Exception {
-        boolean rslt = OrderApplication.applicationContext.getBean(mall.external.ProductService.class)
+        boolean rslt = OrderApplication.applicationContext.getBean(deliveryorder.external.ProductService.class)
         .checkAndModifyStock(this.getProductId(), this.getQty());
 
         if (rslt) {
@@ -446,9 +446,9 @@ public class Order {
 - 배송 서비스에서는 주문 상태 접수 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
 
 ```
-package mall;
+package deliveryorder;
 
-import mall.config.kafka.KafkaProcessor;
+import deliveryorder.config.kafka.KafkaProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;

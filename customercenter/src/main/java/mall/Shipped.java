@@ -1,4 +1,4 @@
-package mall;
+package deliveryorder;
 
 public class Shipped extends AbstractEvent {
 

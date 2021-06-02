@@ -1,6 +1,6 @@
-package mall;
+package deliveryorder;
 
-import mall.config.kafka.KafkaProcessor;
+import deliveryorder.config.kafka.KafkaProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
