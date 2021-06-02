@@ -510,7 +510,7 @@ GitHub Webhook이 동작하여 Docker image가 자동 생성 및 ECR 업로드 �
 
 
 ## Kubernetes 설정
-AWS EKS를 활용했으며, 추가한 namespace는 coffee와 kafka로 아래와 같다.
+AWS EKS를 활용했으며, 추가한 namespace는 deliveryhero 와 kafka로 아래와 같다.
 
 ###EKS Deployment
 
