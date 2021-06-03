@@ -23,8 +23,8 @@
     - [Kubernetes 설정](#Kubernetes-설정)
     - [동기식 호출 / 서킷 브레이킹 / 장애격리](#동기식-호출/서킷-브레이킹/장애격리)
     - [오토스케일 아웃](#Autoscale-(HPA))
-    - [ConfigMap 설정](#ConfigMap-설정))
-    - [무정지 재배포](#Zero-downtime-deploy) 
+    - [ConfigMap 설정](#ConfigMap-설정)
+    - [무정지 재배포](#무정지-재배포) 
  
 
 # 서비스 시나리오
@@ -721,7 +721,7 @@ EKS 설치된 kafka에 정상 접근된 것을 확인할 수 있다. (해당 con
     2021-06-03 03:15:11.326 INFO 1 --- [container-0-C-1] o.s.c.s.b.k.KafkaMessageChannelBinder$1 : partitions assigned: [deliveryorder-0]
 
 
-## Zero-downtime deploy
+## 무정지 재배포
 k8s의 무중단 서비스 배포 기능을 점검한다.
 
     ➜  ~ kubectl describe deploy order -n deliveryorder
