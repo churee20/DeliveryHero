@@ -515,6 +515,7 @@ namespace: kafka
 ###EKS Service
 gateway가 아래와 같이 LoadBalnacer 역할을 수행한다  
 
+```
     ➜  ~ kubectl get service -o wide -n deliveryorder
    NAME             TYPE           CLUSTER-IP      EXTERNAL-IP                                                                   PORT(S)          AGE     SELECTOR
    customercenter   ClusterIP      10.100.104.37   <none>                                                                        8080/TCP         3h22m   app=customercenter
@@ -522,6 +523,7 @@ gateway가 아래와 같이 LoadBalnacer 역할을 수행한다
    gateway          LoadBalancer   10.100.5.49     a70bf9d862d334579968502106dddac2-974943634.ap-northeast-1.elb.amazonaws.com   8080:31458/TCP   69m     app=gateway
    order            ClusterIP      10.100.215.90   <none>                                                                        8080/TCP         3h15m   app=order
    product          ClusterIP      10.100.236.78   <none>                                                                        8080/TCP         3h13m   app=product
+```
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
