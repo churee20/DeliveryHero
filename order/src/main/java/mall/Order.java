@@ -16,8 +16,10 @@ public class Order {
 
     @PrePersist
     public void onPrePersist(){
+        
+      //임의의 부하를 위한 강제 설정  
       try {
-          Thread.currentThread().sleep((long) (800 + Math.random() * 220));
+          Thread.currentThread().sleep((long) (400 + Math.random() * 220));
       } catch (InterruptedException e) {
           e.printStackTrace();
       }

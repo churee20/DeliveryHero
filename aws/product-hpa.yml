@@ -9,5 +9,5 @@ spec:
     kind: Deployment
     name: product
   minReplicas: 1
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 10
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 5
