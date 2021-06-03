@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: product
-          image: username/product:latest
+          image: 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user08-product:v1
           ports:
             - containerPort: 8080
           resources:

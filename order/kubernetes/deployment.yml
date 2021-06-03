@@ -14,10 +14,10 @@ spec:
     metadata:
       labels:
         app: order
- spec:
+    spec:
       containers:
         - name: order
-          image: 932108265503.dkr.ecr.ap-northeast-2.amazonaws.com/order:v1
+          image: 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user08-order:v1
           ports:
             - containerPort: 8080
           resources:
