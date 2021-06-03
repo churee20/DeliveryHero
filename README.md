@@ -731,7 +731,7 @@ k8s의 무중단 서비스 배포 기능을 점검한다.
     Labels:                 app=order
     Annotations:            deployment.kubernetes.io/revision: 1
     Selector:               app=order
-    Replicas:               5 desired | 5 updated | 5 total | 5 available | 0 unavailable
+    Replicas:               4 desired | 4 updated | 4 total | 4 available | 0 unavailable
     StrategyType:           RollingUpdate
     MinReadySeconds:        0
     RollingUpdateStrategy:  50% max unavailable, 50% max surge
