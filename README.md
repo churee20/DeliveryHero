@@ -610,7 +610,7 @@ Shortest transaction:	        0.01
 
 ### Autoscale (HPA)
 
-- 주문서비스에 대해 HPA를 설정한다. 설정은 CPU 사용량이 5%를 넘어서면 pod를 5개까지 추가한다.(memory 자원 이슈로 10개 불가)
+- 주문서비스에 대해 HPA를 설정한다. 설정은 CPU 사용량이 5%를 넘어서면 pod를 5개까지 추가한다.
 ```
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
@@ -627,59 +627,57 @@ spec:
   targetCPUUtilizationPercentage: 5
 
 ➜  ~ kubectl get hpa -n deliveryorder
-NAME      REFERENCE            TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
-order     Deployment/order     30%/5%          1         5         5          17h
-product   Deployment/product   31%/10%         1         5         5          132m
+NAME      REFERENCE            TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+order     Deployment/order     2%/5%     1         5         1          76s
+product   Deployment/product   2%/5%     1         5         1          55s
 ```
 - 부하를 2분간 유지한다.
 ```
-➜  ~ siege -c30 -t60S -r10 --content-type "application/json" 'http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders GET {"productId":1}'
+➜  ~ siege -c30 -t60S -r10 --content-type "application/json" 'a70bf9d862d334579968502106dddac2-974943634.ap-northeast-1.elb.amazonaws.com:8080/orders GET {"productId":1}'
 ```
 - 오토스케일이 어떻게 되고 있는지 확인한다.
 ```
 ➜  ~ kubectl get deploy -n deliveryorder
-NAME       READY   UP-TO-DATE   AVAILABLE   AGE
-customer   1/1     1            1           8h
-delivery   1/1     1            1           8h
-gateway    2/2     2            2           6h24m
-order      1/1     1            1           8h
-product    1/1     1            1           8h
-report     1/1     1            1           4h51m
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+customercenter   1/1     1            1           3h59m
+delivery         1/1     1            1           3h55m
+gateway          1/1     1            1           3h8m
+order            1/1     1            1           3h51m
+product          2/2     2            2           3h50m
 ```
 - 어느정도 시간이 흐르면 스케일 아웃이 동작하는 것을 확인
 ```
 ➜  ~ kubectl get deploy -n deliveryorder
-NAME              READY   UP-TO-DATE   AVAILABLE   AGE
-customer          1/1     1            1           23h
-delivery          1/1     1            1           23h
-gateway           2/2     2            2           21h
-order             5/5     5            5           23h
-product           5/5     5            5           23h
-report            1/1     1            1           19h
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+customercenter   1/1     1            1           4h6m
+delivery         1/1     1            1           4h2m
+gateway          1/1     1            1           3h15m
+order            5/5     5            5           3h58m
+product          2/2     2            2           3h56m
 ```
 
 - Availability 가 높아진 것을 확인 (siege)
 ```
-Transactions:		         995 hits
-Availability:		       82.64 %
-Elapsed time:		       59.85 secs
-Data transferred:	        0.29 MB
-Response time:		        5.11 secs
-Transaction rate:	       16.62 trans/sec
-Throughput:		        0.00 MB/sec
-Concurrency:		       84.94
-Successful transactions:         995
-Failed transactions:	         209
-Longest transaction:	       15.26
-Shortest transaction:	        0.02
+Transactions:                  17058 hits
+Availability:                 100.00 %
+Elapsed time:                  59.97 secs
+Data transferred:               2.29 MB
+Response time:                  0.08 secs
+Transaction rate:             284.44 trans/sec
+Throughput:                     0.04 MB/sec
+Concurrency:                   23.17
+Successful transactions:           0
+Failed transactions:               0
+Longest transaction:            9.19
+Shortest transaction:           0.00
 ```
 
 
 ##ConfigMap 설정
 특정값을 k8s 설정으로 올리고 서비스를 기동 후, kafka 정상 접근 여부 확인한다.
 
-    ➜  ~ kubectl describe cm customercenter-config -n deliveryorder
-    Name:         customercenter-config
+    ➜  ~ kubectl describe cm customercenter -n deliveryorder
+    Name:         customercenter
     Namespace:    deliveryorder
     Labels:       <none>
     Annotations:  <none>
@@ -706,15 +704,20 @@ Shortest transaction:	        0.02
 
 EKS 설치된 kafka에 정상 접근된 것을 확인할 수 있다. (해당 configMap TEXT1 값을 잘못된 값으로 넣으면 kafka WARN)
 
-    2021-05-20 13:42:11.773 INFO 1 --- [pool-1-thread-1] o.a.kafka.common.utils.AppInfoParser : Kafka commitId : fa14705e51bd2ce5
-    2021-05-20 13:42:11.785 INFO 1 --- [pool-1-thread-1] org.apache.kafka.clients.Metadata : Cluster ID: kJGw05_iTNOfms7RJu0JSw
-    2021-05-20 13:42:14.049 INFO 1 --- [container-0-C-1] o.a.k.c.c.internals.AbstractCoordinator : [Consumer clientId=consumer-3, groupId=report] Attempt to heartbeat failed since group is rebalancing
-    2021-05-20 13:42:14.049 INFO 1 --- [container-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator : [Consumer clientId=consumer-3, groupId=report] Revoking previously assigned partitions []
-    2021-05-20 13:42:14.049 INFO 1 --- [container-0-C-1] o.s.c.s.b.k.KafkaMessageChannelBinder$1 : partitions revoked: []
-    2021-05-20 13:42:14.049 INFO 1 --- [container-0-C-1] o.a.k.c.c.internals.AbstractCoordinator : [Consumer clientId=consumer-3, groupId=report] (Re-)joining group
-    2021-05-20 13:42:14.056 INFO 1 --- [container-0-C-1] o.a.k.c.c.internals.AbstractCoordinator : [Consumer clientId=consumer-3, groupId=report] Successfully joined group with generation 3
-    2021-05-20 13:42:14.057 INFO 1 --- [container-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator : [Consumer clientId=consumer-3, groupId=report] Setting newly assigned partitions [coffee-0]
-    2021-05-20 13:42:14.064 INFO 1 --- [container-0-C-1] o.s.c.s.b.k.KafkaMessageChannelBinder$1 : partitions assigned: [coffee-0]
+    22021-06-03 03:15:07.909 INFO 1 --- [ main] o.a.kafka.common.utils.AppInfoParser : Kafka version : 2.0.1
+    2021-06-03 03:15:07.909 INFO 1 --- [ main] o.a.kafka.common.utils.AppInfoParser : Kafka commitId : fa14705e51bd2ce5
+    2021-06-03 03:15:07.912 INFO 1 --- [ main] o.s.s.c.ThreadPoolTaskScheduler : Initializing ExecutorService
+    2021-06-03 03:15:07.917 INFO 1 --- [ main] s.i.k.i.KafkaMessageDrivenChannelAdapter : started     
+    2021-06-03 03:15:08.009 INFO 1 --- [container-0-C-1] org.apache.kafka.clients.Metadata : Cluster ID: JveACNOKQF-_ipk8Rb72uw    
+    2021-06-03 03:15:08.207 INFO 1 --- [container-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator : [Consumer clientId=consumer-3, groupId=customercenter] Revoking previously assigned partitions []
+    2021-06-03 03:15:08.207 INFO 1 --- [container-0-C-1] o.s.c.s.b.k.KafkaMessageChannelBinder$1 : partitions revoked: []
+    2021-06-03 03:15:08.207 INFO 1 --- [container-0-C-1] o.a.k.c.c.internals.AbstractCoordinator : [Consumer clientId=consumer-3, groupId=customercenter] (Re-)joining group
+    2021-06-03 03:15:08.305 INFO 1 --- [ main] o.s.b.w.embedded.tomcat.TomcatWebServer : Tomcat started on port(s): 8080 (http) with context path ''
+    2021-06-03 03:15:08.308 INFO 1 --- [ main] deliveryorder.CustomercenterApplication : Started CustomercenterApplication in 63.002 seconds (JVM running for 65.803)
+    2021-06-03 03:15:11.236 INFO 1 --- [container-0-C-1] o.a.k.c.c.internals.AbstractCoordinator : [Consumer clientId=consumer-3, groupId=customercenter] Successfully joined group with generation 1
+    2021-06-03 03:15:11.239 INFO 1 --- [container-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator : [Consumer clientId=consumer-3, groupId=customercenter] Setting newly assigned partitions [deliveryorder-0]
+    2021-06-03 03:15:11.316 INFO 1 --- [container-0-C-1] o.a.k.c.consumer.internals.Fetcher : [Consumer clientId=consumer-3, groupId=customercenter] Resetting offset for partition deliveryorder-0 to offset 0.
+    2021-06-03 03:15:11.326 INFO 1 --- [container-0-C-1] o.s.c.s.b.k.KafkaMessageChannelBinder$1 : partitions assigned: [deliveryorder-0]
 
 
 ## Zero-downtime deploy
