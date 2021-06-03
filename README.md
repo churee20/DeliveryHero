@@ -23,6 +23,7 @@
     - [Kubernetes 설정](#Kubernetes-설정)
     - [동기식 호출 / 서킷 브레이킹 / 장애격리](#동기식-호출/서킷-브레이킹/장애격리)
     - [오토스케일 아웃](#Autoscale-(HPA))
+    - [ConfigMap 설정](#ConfigMap-설정))
     - [무정지 재배포](#Zero-downtime-deploy) 
  
 
@@ -672,8 +673,8 @@ Longest transaction:            9.19
 Shortest transaction:           0.00
 ```
 
+## ConfigMap 설정
 
-##ConfigMap 설정
 특정값을 k8s 설정으로 올리고 서비스를 기동 후, kafka 정상 접근 여부 확인한다.
 
     ➜  ~ kubectl describe cm customercenter -n deliveryorder
