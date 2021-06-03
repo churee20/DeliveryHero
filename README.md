@@ -23,8 +23,7 @@
     - [Kubernetes 설정](#Kubernetes-설정)
     - [동기식 호출 / 서킷 브레이킹 / 장애격리](#동기식-호출/서킷-브레이킹/장애격리)
     - [오토스케일 아웃](#Autoscale-(HPA))
-    - [무정지 재배포](#Zero-downtime-deploy)
- 
+    - [무정지 재배포](#Zero-downtime-deploy) 
  
 
 # 서비스 시나리오
@@ -499,14 +498,7 @@ http GET localhost:8081/orders/1     # 주문 상태 DeliveryStarted로 변경 �
 
 ## CI/CD 설정
 DeliveryHero ECR 구성은 아래와 같다.
-![image](https://user-images.githubusercontent.com/74900977/120283970-b9ce9900-c2f6-11eb-986c-2aa9eb33c157.png)
-
-사용한 CI/CD 도구는 AWS CodeBuild
-![image](https://user-images.githubusercontent.com/20352446/118972243-4d28d580-b9ab-11eb-83aa-5cd39d06a784.png)
-GitHub Webhook이 동작하여 Docker image가 자동 생성 및 ECR 업로드 된다.
-(pipeline build script 는 report 폴더 이하에 buildspec.yaml 에 포함)
-![image](https://user-images.githubusercontent.com/20352446/118972320-6467c300-b9ab-11eb-811a-423bcb9b59e2.png)
-참고로 그룹미션 작업의 편의를 위해 하나의 git repository를 사용하였다
+![image](https://user-images.githubusercontent.com/74900977/120598173-eb736b80-c480-11eb-9abc-a4b6efd5de07.png)
 
 
 ## Kubernetes 설정
@@ -515,23 +507,21 @@ AWS EKS를 활용했으며, 추가한 namespace는 deliveryhero 와 kafka로 아
 ###EKS Deployment
 
 namespace: deliveryorder
-![image](https://user-images.githubusercontent.com/20352446/118971846-d986c880-b9aa-11eb-8872-5baf9083d99a.png)
+![image](https://user-images.githubusercontent.com/74900977/120598521-515ff300-c481-11eb-9e00-ef118fd419ab.png)
 
 namespace: kafka
-![image](https://user-images.githubusercontent.com/20352446/118973352-8dd51e80-b9ac-11eb-8d5f-ac6aa9fe9e5a.png)
+![image](https://user-images.githubusercontent.com/74900977/120598619-6d639480-c481-11eb-93ca-f42497a25ffe.png)
 
 ###EKS Service
 gateway가 아래와 같이 LoadBalnacer 역할을 수행한다  
 
-    ➜  ~ kubectl get service -o wide -n coffee
-    NAME       TYPE           CLUSTER-IP       EXTERNAL-IP                                                                    PORT(S)          AGE     SELECTOR
-    customer   ClusterIP      10.100.166.116   <none>                                                                         8080/TCP         8h      app=customer
-    delivery   ClusterIP      10.100.138.255   <none>                                                                         8080/TCP         8h      app=delivery
-    gateway    LoadBalancer   10.100.59.190    ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com   8080:31716/TCP   6h11m   app=gateway
-    order      ClusterIP      10.100.123.133   <none>                                                                         8080/TCP         8h      app=order
-    product    ClusterIP      10.100.170.95    <none>                                                                         8080/TCP         5h44m   app=product
-    report     ClusterIP      10.100.127.177   <none>                                                                         8080/TCP         4h41m   app=report
-
+    ➜  ~ kubectl get service -o wide -n deliveryorder
+   NAME             TYPE           CLUSTER-IP      EXTERNAL-IP                                                                   PORT(S)          AGE     SELECTOR
+   customercenter   ClusterIP      10.100.104.37   <none>                                                                        8080/TCP         3h22m   app=customercenter
+   delivery         ClusterIP      10.100.93.245   <none>                                                                        8080/TCP         3h18m   app=delivery
+   gateway          LoadBalancer   10.100.5.49     a70bf9d862d334579968502106dddac2-974943634.ap-northeast-1.elb.amazonaws.com   8080:31458/TCP   69m     app=gateway
+   order            ClusterIP      10.100.215.90   <none>                                                                        8080/TCP         3h15m   app=order
+   product          ClusterIP      10.100.236.78   <none>                                                                        8080/TCP         3h13m   app=product
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
