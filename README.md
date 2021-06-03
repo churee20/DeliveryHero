@@ -16,7 +16,7 @@
   - [구현:](#구현)
     - [DDD 의 적용](#ddd-의-적용)   
     - [동기식 호출 과 Fallback 처리](#동기식-호출-과-Fallback-처리)
-    - [비동기식 호출 과 Eventual Consistency](#동기식-호출-과-Fallback-처리)
+    - [비동기식 호출 과 Eventual Consistency](#비동기식-호출-publish-subscribe)
     
   - [운영](#운영)
     - [CI/CD 설정](#CI/CD-설정)
@@ -496,7 +496,7 @@ http GET localhost:8081/orders/1     # 주문 상태 DeliveryStarted로 변경 �
 
 # 운영
 
-## CI/CD 설정
+## CI-CD 설정
 DeliveryHero ECR 구성은 아래와 같다.
 ![image](https://user-images.githubusercontent.com/74900977/120598173-eb736b80-c480-11eb-9abc-a4b6efd5de07.png)
 
@@ -525,7 +525,7 @@ gateway가 아래와 같이 LoadBalnacer 역할을 수행한다
    product          ClusterIP      10.100.236.78   <none>                                                                        8080/TCP         3h13m   app=product
 ```
 
-## 동기식 호출 / 서킷 브레이킹 / 장애격리
+## 동기식 / 호출 서킷 브레이킹 / 장애격리
 
 * 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
 
