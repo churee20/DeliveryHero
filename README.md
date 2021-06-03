@@ -724,31 +724,39 @@ EKS 설치된 kafka에 정상 접근된 것을 확인할 수 있다. (해당 con
 k8s의 무중단 서비스 배포 기능을 점검한다.
 
     ➜  ~ kubectl describe deploy order -n deliveryorder
+ ```
     Name:                   order
     Namespace:              deliveryorder
-    CreationTimestamp:      Thu, 20 May 2021 12:59:14 +0900
+    CreationTimestamp:      Thu, 03 Jun 2021 12:21:55 +0900
     Labels:                 app=order
-    Annotations:            deployment.kubernetes.io/revision: 8
+    Annotations:            deployment.kubernetes.io/revision: 1
     Selector:               app=order
-    Replicas:               4 desired | 4 updated | 4 total | 4 available | 0 unavailable
+    Replicas:               5 desired | 5 updated | 5 total | 5 available | 0 unavailable
     StrategyType:           RollingUpdate
     MinReadySeconds:        0
     RollingUpdateStrategy:  50% max unavailable, 50% max surge
     Pod Template:
-        Labels:       app=order
-        Annotations:  kubectl.kubernetes.io/restartedAt: 2021-05-20T12:06:29Z
-        Containers:
-            order:
-                Image:        740569282574.dkr.ecr.ap-northeast-2.amazonaws.com/order:v1
-                Port:         8080/TCP
-                Host Port:    0/TCP
-                Liveness:     http-get http://:8080/actuator/health delay=120s timeout=2s period=5s #success=1 #failure=5
-                Readiness:    http-get http://:8080/actuator/health delay=10s timeout=2s period=5s #success=1 #failure=10
+      Labels:  app=order
+      Containers:
+        order:
+          Image:      879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user08-order:v1
+          Port:       8080/TCP
+          Host Port:  0/TCP
+          Limits:
+            cpu:     500m
+            memory:  1000Mi
+          Requests:
+            cpu:        200m
+            memory:     1000Mi
+          Liveness:     http-get http://:8080/actuator/health delay=120s timeout=2s period=5s #success=1 #failure=5
+          Readiness:    http-get http://:8080/actuator/health delay=30s timeout=2s period=5s #success=1 #failure=10   
+  
+```
 
 기능 점검을 위해 order Deployment의 replicas를 4로 수정했다. 
 그리고 위 Readiness와 RollingUpdateStrategy 설정이 정상 적용되는지 확인한다.
 
-    ➜  ~ kubectl rollout status deploy/order -n coffee
+    ➜  ~  deploy/order -n deliveryorder
 
     ➜  ~ kubectl get po -n deliveryorder
     NAME                        READY   STATUS    RESTARTS   AGE
