@@ -503,7 +503,7 @@ DeliveryHero ECR 구성은 아래와 같다.
 
 
 ## Kubernetes 설정
-AWS EKS를 활용했으며, 추가한 namespace는 deliveryhero 와 kafka로 아래와 같다.
+AWS EKS를 활용했으며, 추가한 namespace는 deliveryhero, kafka, Ingress-basic, lens-metrics 로 아래와 같다.
 
 ###EKS Deployment
 
@@ -512,6 +512,13 @@ namespace: deliveryorder
 
 namespace: kafka
 ![image](https://user-images.githubusercontent.com/74900977/120598619-6d639480-c481-11eb-93ca-f42497a25ffe.png)
+
+namespace: Ingress-basic
+![image](https://user-images.githubusercontent.com/74900977/120729339-e0b8e500-c519-11eb-85e1-90e085a6c1da.png)
+
+namespace: lens-metrics
+![image](https://user-images.githubusercontent.com/74900977/120729386-fcbc8680-c519-11eb-85d2-24630cc51f1a.png)
+
 
 ###EKS Service
 gateway가 아래와 같이 LoadBalnacer 역할을 수행한다  
@@ -611,7 +618,7 @@ Shortest transaction:	        0.01
 
 ### Autoscale (HPA)
 
-- 주문서비스에 대해 HPA를 설정한다. 설정은 CPU 사용량이 5%를 넘어서면 pod를 5개까지 추가한다.
+- 주문서비스에 대해 HPA를 설정한다. 설정은 CPU 사용량이 10%를 넘어서면 pod를 5개까지 추가한다.
 ```
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
@@ -625,12 +632,12 @@ spec:
     name: order
   minReplicas: 1
   maxReplicas: 5
-  targetCPUUtilizationPercentage: 5
+  targetCPUUtilizationPercentage: 10
 
 ➜  ~ kubectl get hpa -n deliveryorder
 NAME      REFERENCE            TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
-order     Deployment/order     2%/5%     1         5         1          76s
-product   Deployment/product   2%/5%     1         5         1          55s
+order     Deployment/order     1%/10%     1         5         1          76s
+product   Deployment/product   1%/10%     1         5         1          55s
 ```
 - 부하를 2분간 유지한다.
 ```
