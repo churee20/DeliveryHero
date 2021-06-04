@@ -215,9 +215,6 @@ http POST localhost:8084/products productId=3 name=“Spagetti” stock=5 ( OK )
 # 상품 등록 상태 확인
 http GET localhost:8084/products ( OK )
 
-HTTP/1.1 200
-Content-Type: application/hal+json;charset=UTF-8
-Date: Tue, 01 Jun 2021 05:33:41 GMT
 Transfer-Encoding: chunked
 {
     "_embedded": {
@@ -261,27 +258,7 @@ Transfer-Encoding: chunked
                 "productId": 3,
                 "stock": 5
             }
-        ]
-    },
-    "_links": {
-        "profile": {
-            "href": "http://localhost:8084/profile/products"
-        },
-        "search": {
-            "href": "http://localhost:8084/products/search"
-        },
-        "self": {
-            "href": "http://localhost:8084/products{?page,size,sort}",
-            "templated": true
-        }
-    },
-    "page": {
-        "number": 0,
-        "size": 20,
-        "totalElements": 3,
-        "totalPages": 1
-    }
-}
+       
 
 # 주문 처리
 http POST localhost:8081/orders productId=1 qty=10 ( OK )
