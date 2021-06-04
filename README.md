@@ -578,7 +578,7 @@ hystrix:
 - 60초 동안 실시
 
 ```
-siege -c100 -t60S -r10 --content-type "application/json" 'http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders GET {"productId":1}'
+siege -c100 -t60S -r10 --content-type "application/json" 'http://a70bf9d862d334579968502106dddac2-974943634.ap-northeast-1.elb.amazonaws.com:8080/orders GET {"productId":1}'
 
 HTTP/1.1 201     6.51 secs:     239 bytes ==> POST http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders
 HTTP/1.1 201     0.73 secs:     239 bytes ==> POST http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders
