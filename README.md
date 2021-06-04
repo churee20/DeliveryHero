@@ -740,7 +740,7 @@ k8s의 무중단 서비스 배포 기능을 점검한다.
 기능 점검을 위해 order Deployment의 replicas를 4로 수정했다. 
 그리고 위 Readiness와 RollingUpdateStrategy 설정이 정상 적용되는지 확인한다.
 
-    ➜  ~  deploy/order -n deliveryorder
+    ➜  ~ kubectl deploy/order -n deliveryorder
 
     ➜  ~ kubectl get po -n deliveryorder
     NAME                        READY   STATUS    RESTARTS   AGE
