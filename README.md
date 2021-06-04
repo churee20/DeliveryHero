@@ -1,15 +1,15 @@
-# 개인 과제 프로젝트 : 배달의 민족
+# 개인 과제 프로젝트 : Smart Order
 
-![배달의민족](https://user-images.githubusercontent.com/74900977/119936361-039c4400-bfc4-11eb-99fc-daef9a8ac399.png)
+![스마트 오더]![86312_111404_514](https://user-images.githubusercontent.com/74900977/120735892-5460ef00-c526-11eb-86da-ed1e8d6d4651.jpg)
 
-배달의 민족 서비스를 MSA/DDD/Event Storming/EDA 를 포괄하는 분석/설계/구현/운영 전단계를 커버하도록 구성한 프로젝트임
+Smart Order 서비스를 MSA/DDD/Event Storming/EDA 를 포괄하는 분석/설계/구현/운영 전단계를 커버하도록 구성한 프로젝트임
 
 - 체크포인트 : https://workflowy.com/s/assessment/qJn45fBdVZn4atl3
 
 
 # Table of contents
 
-- [예제 - 배달의 민족]
+- [예제 - Smart Order]
   - [서비스 시나리오](#서비스-시나리오)
   - [분석/설계](#분석설계)
        
