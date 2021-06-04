@@ -62,6 +62,9 @@ spring:
         event-out:
           destination: deliveryorder
           contentType: application/json
+feign:
+  hystrix:
+    enabled: true
 hystrix:
   command:
     # 전역설정
