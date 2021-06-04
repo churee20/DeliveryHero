@@ -1,6 +1,7 @@
 # 개인 과제 프로젝트 : Smart Order
 
-![스마트 오더]![86312_111404_514](https://user-images.githubusercontent.com/74900977/120735892-5460ef00-c526-11eb-86da-ed1e8d6d4651.jpg)
+![86312_111404_514](https://user-images.githubusercontent.com/74900977/120735892-5460ef00-c526-11eb-86da-ed1e8d6d4651.jpg)
+
 
 Smart Order 서비스를 MSA/DDD/Event Storming/EDA 를 포괄하는 분석/설계/구현/운영 전단계를 커버하도록 구성한 프로젝트임
 
