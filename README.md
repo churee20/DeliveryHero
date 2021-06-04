@@ -262,11 +262,9 @@ Transfer-Encoding: chunked
 
 # 주문 처리
 http POST localhost:8081/orders productId=1 qty=10 ( OK )
-http POST http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders productId=1 qty=10
 
 # 주문 상태 확인
 http GET localhost:8081/orders/1 ( OK )
-http GET http://ac4ff02e7969e44afbe64ede4b2441ac-1979746227.ap-northeast-2.elb.amazonaws.com:8080/orders/1
 
 HTTP/1.1 200
 Content-Type: application/hal+json;charset=UTF-8
